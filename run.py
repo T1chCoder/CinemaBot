@@ -1,8 +1,8 @@
 from aiogram import Bot, Dispatcher
 from app.handlers import router
+import config
 import asyncio
 import logging
-import config
 
 async def main():
     bot = Bot(token=config.BOT_API_TOKEN)
@@ -16,4 +16,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        logging.info("Process interrupted, shutting down gracefully.")
+        logging.info("Process interrupted, shutting down gracefully")

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from config import Base
+import config
 
-class User(Base):
+class User(config.Base):
     __tablename__ = 'users'
