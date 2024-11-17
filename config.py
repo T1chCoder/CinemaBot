@@ -21,10 +21,8 @@ engine = create_async_engine(url=DB_URL)
 
 async_session = async_sessionmaker(engine)
 
-
 class Base(AsyncAttrs, DeclarativeBase):
     pass
-
 
 class Data:
     page = views.HomeView
@@ -32,7 +30,6 @@ class Data:
     db = DB
     messages = []
     last_message = []
-
 
 async def db(engine: AsyncEngine):
     async with engine.begin() as conn:

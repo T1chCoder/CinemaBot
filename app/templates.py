@@ -10,7 +10,7 @@ from aiogram.types import (
 )
 import config
 from . import actions
-
+from aiogram.fsm.state import StatesGroup, State
 
 class TemplateView:
     text = None
@@ -79,14 +79,14 @@ class TemplateView:
             markup = self.markup
         else:
             markup = ReplyKeyboardRemove()
-        sent_message = await message.answer(self.text, reply_markup=markup)
+        self.text = self.text.replace("!", r"\!").replace(".", r"\.")
+        sent_message = await message.answer(self.text, reply_markup=markup, parse_mode='MarkdownV2')
         actions.add_message(sent_message)
         config.Data.page = self.__class__
         actions.add_message(message)
 
     async def handle(self, message):
         await self.send(message)
-
 
 class CommandView:
     text = None
@@ -101,7 +101,6 @@ class CommandView:
         async def command_view_handler(message: Message):
             if self.redirect_to:
                 await self.redirect_to(bot=self.bot, dp=self.dp).handle(message)
-
 
 class ReplyKeyboardButtonView:
     text = None
@@ -119,7 +118,6 @@ class ReplyKeyboardButtonView:
             async def reply_keyboard_button_view_handler(message: Message):
                 if self.redirect_to:
                     await self.redirect_to(bot=self.bot, dp=self.dp).handle(message)
-
 
 class InlineKeyboardButtonView:
     text = None

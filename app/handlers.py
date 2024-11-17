@@ -1,11 +1,12 @@
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from . import actions
+from . import actions, templates, middlewares
 import config
-from . import templates
 
 router = Router()
+
+router.message.outer_middleware(middlewares.TestMiddleware())
 
 async def register_views(router: Router):
     command_view_subclasses = templates.CommandView.__subclasses__()
@@ -36,8 +37,6 @@ async def register_views(router: Router):
 
 reply_keyboard_buttons = templates.ReplyKeyboardButtonView.__subclasses__()
 commands = templates.CommandView.__subclasses__()
-
-print(reply_keyboard_buttons)
 
 reply_button_list = reply_keyboard_buttons[:]
 command_list = commands[:]
