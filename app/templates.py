@@ -1,4 +1,5 @@
 from aiogram import Router, F
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 from aiogram.types import (
@@ -8,6 +9,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
+import types
 import config
 from . import actions
 from aiogram.fsm.state import StatesGroup, State
@@ -73,8 +75,8 @@ class TemplateView:
             elif inline_keyboard_markup.inline_keyboard:
                 view.markup = inline_keyboard_markup
 
-    async def send(self, message):
-        await actions.clear_messages()
+    async def send_message(self, message):
+        await actions.clear_messages(message)
         if self.markup:
             markup = self.markup
         else:
@@ -86,7 +88,7 @@ class TemplateView:
         actions.add_message(message)
 
     async def handle(self, message):
-        await self.send(message)
+        await self.send_message(message)
 
 class CommandView:
     text = None
@@ -98,9 +100,18 @@ class CommandView:
 
     def handle(self, router: Router):
         @router.message(Command(self.text))
-        async def command_view_handler(message: Message):
+        async def command_view_handler(message: Message, state: FSMContext):
             if self.redirect_to:
-                await self.redirect_to(bot=self.bot, dp=self.dp).handle(message)
+                state_pg = False
+                state_views = StateView.__subclasses__()
+
+                if self.redirect_to in state_views:
+                    state_pg = True
+
+                if state_pg:
+                    await self.redirect_to(bot=self.bot, dp=self.dp).handle(message, state)
+                else:
+                    await self.redirect_to(bot=self.bot, dp=self.dp).handle(message)
 
 class ReplyKeyboardButtonView:
     text = None
@@ -113,11 +124,19 @@ class ReplyKeyboardButtonView:
 
     def handle(self, router: Router):
         if config.Data.page in self.pages:
-
             @router.message(F.text == self.text)
-            async def reply_keyboard_button_view_handler(message: Message):
+            async def reply_keyboard_button_view_handler(message: Message, state: FSMContext):
                 if self.redirect_to:
-                    await self.redirect_to(bot=self.bot, dp=self.dp).handle(message)
+                    state_pg = False
+                    state_views = StateView.__subclasses__()
+
+                    if self.redirect_to in state_views:
+                        state_pg = True
+
+                    if state_pg:
+                        await self.redirect_to(bot=self.bot, dp=self.dp).handle(message, state)
+                    else:
+                        await self.redirect_to(bot=self.bot, dp=self.dp).handle(message)
 
 class InlineKeyboardButtonView:
     text = None
@@ -131,8 +150,73 @@ class InlineKeyboardButtonView:
         
     def handle(self, router: Router):
         @router.callback_query(lambda c: c.data == self.callback_data)
-        async def inline_keyboard_button_view_handler(callback_query: CallbackQuery):
+        async def inline_keyboard_button_view_handler(callback_query: CallbackQuery, state: FSMContext):
             if self.redirect_to:
-                await self.redirect_to(bot=self.bot, dp=self.dp).handle(
-                    callback_query.message
-                )
+                state_pg = False
+                state_views = StateView.__subclasses__()
+
+                if self.redirect_to in state_views:
+                    state_pg = True
+
+                if state_pg:
+                    await self.redirect_to(bot=self.bot, dp=self.dp).handle(callback_query.message, state)
+                else:
+                    await self.redirect_to(bot=self.bot, dp=self.dp).handle(callback_query.message)
+
+class StateView(StatesGroup):
+    transitions = []
+    success = None
+    redirect_to = None
+    data = {}
+
+    def __init__(self, bot, dp):
+        self.bot = bot 
+        self.dp = dp
+
+        for transition in self.transitions:
+            field = transition["field"]
+            if not hasattr(self.__class__, field):
+                setattr(self.__class__, field, State(field))
+
+        for id, transition in enumerate(self.transitions):
+            function_title = f"handle_transition_{transition['field']}"
+            code = None
+            
+            if len(self.transitions) - 1 == id:
+                initial = """pass"""
+            else: 
+                initial = f"""await state.set_state(self.{self.transitions[id + 1]['field']}) 
+            await self.send_message(message, text="{self.transitions[id + 1]['text']}: ")"""
+
+            code = f"""
+def {function_title}(self, router: Router):
+    @router.message(self.{transition['field']})
+    async def transition_{transition['field']}_handler(message: Message, state: FSMContext):
+        await state.update_data({transition['field']}=message.text)
+        if {len(self.transitions) - 1} == {id}:
+            data = await state.get_data()
+            await self.send_message(message, text=self.success(data))
+            await state.clear()
+            config.Data.echo = True
+        else:
+            {initial}
+"""
+
+            if code:
+                exec(code, globals(), locals())
+            
+            func = locals()[function_title]
+            setattr(self, function_title, types.MethodType(func, self))
+
+    async def send_message(self, message, text):
+        await actions.clear_messages(message)
+        text = text.replace("!", r"\!").replace(".", r"\.")
+        sent_message = await message.answer(text, parse_mode='MarkdownV2')
+        actions.add_message(sent_message)
+        config.Data.page = self.__class__
+        actions.add_message(message)
+
+    async def handle(self, message, state):
+        await state.set_state(getattr(self, self.transitions[0]["field"]))
+        await self.send_message(message, text=self.transitions[0]["text"] + ": ")
+        config.Data.echo = False

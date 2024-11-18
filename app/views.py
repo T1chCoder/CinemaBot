@@ -1,4 +1,5 @@
 from . import templates
+from aiogram.types import Message
 
 #Views
 class HomeView(templates.TemplateView):
@@ -15,8 +16,9 @@ class HomeView(templates.TemplateView):
         "👉 [Добавьте CinemaBot в свой Telegram](https://t.me/CinemaBot)\n"
     )
 
-class MovieSearchView(templates.TemplateView):
-    text = (
+class MovieSearchStateView(templates.StateView):
+    transitions = [
+        {"text": (
         "🔍 *Поиск фильма*\n\n"
         "Введите название фильма или выберите жанр для поиска. 🎬\n\n"
         "*CinemaBot* поможет вам найти информацию о любых фильмах, включая:\n"
@@ -27,7 +29,11 @@ class MovieSearchView(templates.TemplateView):
         "📰 Новости и обновления\n\n"
         "Вы можете ввести только название фильма или использовать фильтры по жанрам для более точных результатов.\n\n"
         "Введите название фильма или выберите жанр ниже!"
-    )
+    ), "field": "name"},
+    ]
+
+    def success(self, data): 
+        return f'Ваш запрос: "{data["name"]}"'
 
 class RecommendedMoviesView(templates.TemplateView):
     text = (
@@ -40,6 +46,11 @@ class RecommendedMoviesView(templates.TemplateView):
     "3. Вы можете просмотреть подробности о каждом фильме: трейлер, рейтинг, отзывы и многое другое.\n\n"
     "🎥 Начните получать персонализированные рекомендации прямо сейчас!"
 )
+    
+class MovieSearchResultView(templates.TemplateView):
+    text = (
+        "Найденные"
+        )
 
 class NewMoviesView(templates.TemplateView):
     text = (
@@ -121,7 +132,7 @@ class HelpView(templates.TemplateView):
 class SearchReplyButtonView(templates.ReplyKeyboardButtonView):
     text = "🔍 Поиск фильма"
     pages = [HomeView]
-    redirect_to = MovieSearchView
+    redirect_to = MovieSearchStateView
 
 class RecommendedMoviesReplyButtonView(templates.ReplyKeyboardButtonView):
     text = "🎬 Рекомендации"
@@ -164,18 +175,18 @@ class HelpCommandView(templates.CommandView):
 
 class MovieSearchCommandView(templates.CommandView):
     text = "search"
-    redirect_to = MovieSearchView
+    redirect_to = MovieSearchStateView
 
 class RecommendedMoviesCommandView(templates.CommandView):
     text = "recommendations"
-    redirect_to = MovieSearchView
+    redirect_to = MovieSearchStateView
 
 class NewMoviesCommandView(templates.CommandView):
     text = "releases"
     redirect_to = NewMoviesView
 
 class MovieTrailersCommandView(templates.CommandView):
-    text = "releases"
+    text = "trailers"
     redirect_to = MovieTrailersView
 
 class MovieRatingsCommandView(templates.CommandView):

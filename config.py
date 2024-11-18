@@ -30,6 +30,8 @@ class Data:
     db = DB
     messages = []
     last_message = []
+    echo = True
+    blocked_users = []
 
 async def db(engine: AsyncEngine):
     async with engine.begin() as conn:
