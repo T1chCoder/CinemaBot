@@ -6,6 +6,7 @@ from aiogram.types import Message
 import config
 import asyncio
 import logging
+import db
 
 async def on_start(bot: Bot):
     await bot.delete_webhook()
@@ -22,7 +23,7 @@ async def main():
     await on_start(config.bot)
     await config.dp.start_polling(config.bot)
     if config.Data.db:
-        await config.db(config.engine)
+        await db.init_db()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

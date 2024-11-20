@@ -1,4 +1,5 @@
-from . import actions, views, templates, middlewares
+from . import actions, views, templates, middlewares, states, commands
+from .keyboard import inline, reply
 import config
 from aiogram import F, Router
 from aiogram.types import Message
@@ -47,15 +48,15 @@ async def register_views(router: Router):
             exec(code, globals(), locals())
 
 reply_keyboard_buttons = templates.ReplyKeyboardButtonView.__subclasses__()
-commands = templates.CommandView.__subclasses__()
+commands_var = templates.CommandView.__subclasses__()
 
 reply_button_list = reply_keyboard_buttons[:]
-command_list = commands[:]
+command_list = commands_var[:]
 restricted_text_list = []
 
 for reply_button in reply_keyboard_buttons:
     reply_button_list.extend(reply_button.__subclasses__())
-for command in commands:
+for command in commands_var:
     command_list.extend(command.__subclasses__())
 
 for reply_button in reply_button_list:

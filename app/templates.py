@@ -165,7 +165,8 @@ class InlineKeyboardButtonView:
 
 class StateView(StatesGroup):
     transitions = []
-    success = None
+    success_val = None
+    success_message = None
     redirect_to = None
     data = {}
 
@@ -195,9 +196,11 @@ def {function_title}(self, router: Router):
         await state.update_data({transition['field']}=message.text)
         if {len(self.transitions) - 1} == {id}:
             data = await state.get_data()
-            await self.send_message(message, text=self.success(data))
+            self.success_val = self.success(data)
             await state.clear()
             config.Data.echo = True
+            self.success_message = message
+            await self.redirect_to_page()
         else:
             {initial}
 """
@@ -207,6 +210,10 @@ def {function_title}(self, router: Router):
             
             func = locals()[function_title]
             setattr(self, function_title, types.MethodType(func, self))
+
+    async def redirect_to_page(self):
+        if self.success_val:
+           await  self.redirect_to(bot=self.bot, dp=self.dp).handle(self.success_message, text=self.success_val["message"], data=self.success_val["items"])
 
     async def send_message(self, message, text):
         await actions.clear_messages(message)
@@ -220,3 +227,39 @@ def {function_title}(self, router: Router):
         await state.set_state(getattr(self, self.transitions[0]["field"]))
         await self.send_message(message, text=self.transitions[0]["text"] + ": ")
         config.Data.echo = False
+
+class ListView:
+    text = None
+    markup = None
+    data = []
+
+    def __init__(self, bot, dp):
+        self.bot = bot
+        self.dp = dp
+
+    def create_markup(self):
+        if self.data:
+            inline_buttons = []
+            
+            for item in self.data: 
+                inline_buttons.append([InlineKeyboardButton(text=item["text"], callback_data=item["callback_data"])])
+            
+            self.markup = InlineKeyboardMarkup(inline_keyboard=inline_buttons)
+
+    async def send_message(self, message):
+        await actions.clear_messages(message)
+        if self.markup:
+            markup = self.markup
+        else:
+            markup = ReplyKeyboardRemove()
+        self.text = self.text.replace("!", r"\!").replace(".", r"\.")
+        sent_message = await message.answer(self.text, reply_markup=markup, parse_mode='MarkdownV2')
+        actions.add_message(sent_message)
+        config.Data.page = self.__class__
+        actions.add_message(message)
+
+    async def handle(self, message, text, data):
+        self.data = data
+        self.text = text
+        self.create_markup()
+        await self.send_message(message)

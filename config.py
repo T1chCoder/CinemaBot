@@ -17,13 +17,6 @@ DB = bool(os.getenv("DB", False)) == True
 bot = Bot(token=BOT_API_TOKEN)
 dp = Dispatcher()
 
-engine = create_async_engine(url=DB_URL)
-
-async_session = async_sessionmaker(engine)
-
-class Base(AsyncAttrs, DeclarativeBase):
-    pass
-
 class Data:
     page = views.HomeView
     message_clear = MESSAGE_CLEAR
@@ -32,7 +25,4 @@ class Data:
     last_message = []
     echo = True
     blocked_users = []
-
-async def db(engine: AsyncEngine):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    list_items = 10

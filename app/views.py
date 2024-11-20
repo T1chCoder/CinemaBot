@@ -16,25 +16,6 @@ class HomeView(templates.TemplateView):
         "👉 [Добавьте CinemaBot в свой Telegram](https://t.me/CinemaBot)\n"
     )
 
-class MovieSearchStateView(templates.StateView):
-    transitions = [
-        {"text": (
-        "🔍 *Поиск фильма*\n\n"
-        "Введите название фильма или выберите жанр для поиска. 🎬\n\n"
-        "*CinemaBot* поможет вам найти информацию о любых фильмах, включая:\n"
-        "📅 Дату выхода\n"
-        "⭐ Рейтинг и рецензии\n"
-        "🎥 Трейлеры\n"
-        "🎭 Состав актеров\n"
-        "📰 Новости и обновления\n\n"
-        "Вы можете ввести только название фильма или использовать фильтры по жанрам для более точных результатов.\n\n"
-        "Введите название фильма или выберите жанр ниже!"
-    ), "field": "name"},
-    ]
-
-    def success(self, data): 
-        return f'Ваш запрос: "{data["name"]}"'
-
 class RecommendedMoviesView(templates.TemplateView):
     text = (
     "🤖 *Рекомендации от CinemaBot* 🎬\n\n"
@@ -128,75 +109,6 @@ class HelpView(templates.TemplateView):
     "Если у вас есть вопросы или предложения, не стесняйтесь обратиться к нам! 📩"
 )
 
-#ReplyButtons
-class SearchReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "🔍 Поиск фильма"
-    pages = [HomeView]
-    redirect_to = MovieSearchStateView
-
-class RecommendedMoviesReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "🎬 Рекомендации"
-    pages = [HomeView]
-    redirect_to = RecommendedMoviesView
-
-class NewMoviesReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "✨ Новинки"
-    pages = [HomeView]
-    redirect_to = NewMoviesView
-
-class MovieTrailersReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "🎥 Трейлеры"
-    pages = [HomeView]
-    redirect_to = MovieTrailersView
-
-class MovieRatingsReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "🌟 Рейтинг фильмов"
-    pages = [HomeView]
-    redirect_to = MovieRatingsView
-
-class MovieNewsReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "📰 Новости кино"
-    pages = [HomeView]
-    redirect_to = MovieNewsView
-
-class TheatreSessionsReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "🎫 Сеансы кинотеатров"
-    pages = [HomeView]
-    redirect_to = TheatreSessionsView
-
-#Commands
-class StartCommandView(templates.CommandView):
-    text = "start"
-    redirect_to = HomeView
-
-class HelpCommandView(templates.CommandView):
-    text = "help"
-    redirect_to = HelpView
-
-class MovieSearchCommandView(templates.CommandView):
-    text = "search"
-    redirect_to = MovieSearchStateView
-
-class RecommendedMoviesCommandView(templates.CommandView):
-    text = "recommendations"
-    redirect_to = MovieSearchStateView
-
-class NewMoviesCommandView(templates.CommandView):
-    text = "releases"
-    redirect_to = NewMoviesView
-
-class MovieTrailersCommandView(templates.CommandView):
-    text = "trailers"
-    redirect_to = MovieTrailersView
-
-class MovieRatingsCommandView(templates.CommandView):
-    text = "ratings"
-    redirect_to = MovieRatingsView
-
-class TheatreSessionsCommandView(templates.CommandView):
-    text = "showtimes"
-    redirect_to = TheatreSessionsView
-
-class MovieNewsCommandView(templates.CommandView):
-    text = "news"
-    redirect_to = MovieNewsView
+#List-Views
+class MovieListView(templates.ListView):
+    pass
