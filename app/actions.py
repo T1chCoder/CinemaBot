@@ -1,8 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 import config
 import aiogram
 import db as database
+import config
 
 async def clear_messages(message):
     if config.Data.messages and config.Data.message_clear:
@@ -119,3 +119,31 @@ class db:
             except Exception as e:
                 await session.rollback()  # Rollback in case of failure
                 raise config.CustomError(f"An error occurred while updating the record: {e}")
+            
+    """ @staticmethod
+    async def filter(model, data):
+        from sqlalchemy import select, and_
+
+        if not data:
+            raise config.CustomError(f"No data provided for update.")
+
+        async with database.AsyncSessionLocal() as session:
+            try:
+                query = select(model)
+                filters = []
+                
+                for item in data:
+                    if "var" not in item or "val" not in item:
+                        raise config.CustomError(f"Отсутствуют ключи 'variable' или 'valuable' в данных: {item}")
+                    filters.append(getattr(model, item["var"]) == item["val"])
+
+                if filters:
+                    query = query.filter(and_(*filters))
+                
+                result = await session.execute(query)
+                items = result.scalars().all()
+
+                return items
+            except Exception as e:
+                await session.rollback()  # Rollback in case of failure
+                raise config.CustomError(f"An error occurred while filtering the record: {e}")"""

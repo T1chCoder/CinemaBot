@@ -16,17 +16,15 @@ class MovieSearchStateView(templates.StateView):
     ), "field": "text"},
     ]
     redirect_to = views.MovieListView
-
     async def success(self, data): 
         typed_text = data["text"]
-        
         async def items():
-            found_movies = await actions.db.search(models.Movie, field="title", text=typed_text)
+            model = models.Movie
+            found_movies = await actions.db.search(model, field="title", text=typed_text)
             inline_buttons = []
             for found_movie in found_movies:
-                inline_buttons.append({"text": found_movie.title, "callback_data": f"movie_{found_movie.uuid.lower()}"})
+                inline_buttons.append({"text": found_movie.title, "callback_data": f"{model.__tablename__}_{found_movie.uuid.lower()}"})
             return inline_buttons
-
         async def message():
             found_movies_count = len(await items())
             if found_movies_count > 0:
@@ -40,9 +38,8 @@ class MovieSearchStateView(templates.StateView):
                 text = (
                     f"😔 **По запросу** \"\u200B**{typed_text}**\u200B\" **ничего не найдено!**\n\n"
                     f"🔍 Мы постарались найти для вас что-то поинтереснее, но ничего не нашли.\n"
-                    f"✨ Попробуйте изменить запрос или проверьте орфографию!\n"
+                    f"✨ Попробуйте изменить запрос или проверьте орфографию!\n\n"
                     f"💡 Может быть, хотите попробовать что-то другое? Мы всегда готовы помочь!"
                     )
             return text
-
         return {"items": await items(), "message": await message()}

@@ -3,9 +3,7 @@ from .keyboard import inline, reply
 import config
 from aiogram import F, Router
 from aiogram.types import Message
-from aiogram.fsm.state import StatesGroup, State
-from aiogram.fsm.context import FSMContext
-import re
+import db
 
 router = Router()
 
@@ -16,11 +14,13 @@ async def register_views(router: Router):
     reply_keyboard_button_view_subclasses = templates.ReplyKeyboardButtonView.__subclasses__()
     inline_keyboard_button_view_subclasses = templates.InlineKeyboardButtonView.__subclasses__()
     state_view_subclasses = templates.StateView.__subclasses__()
+    detail_view_subclasses = templates.DetailView.__subclasses__()
     
     command_views = command_view_subclasses[:]
     reply_keyboard_button_views = reply_keyboard_button_view_subclasses[:]
     inline_keyboard_button_views = inline_keyboard_button_view_subclasses[:]
     state_views = state_view_subclasses[:]
+    detail_views = detail_view_subclasses[:]
 
     for command_view_subclass in command_view_subclasses:
         command_views.extend(command_view_subclass.__subclasses__())
@@ -30,6 +30,8 @@ async def register_views(router: Router):
         inline_keyboard_button_views.extend(inline_keyboard_button_view_subclass.__subclasses__())
     for state_view_subclass in state_view_subclasses:
         state_views.extend(state_view_subclass.__subclasses__())
+    for detail_view_subclass in detail_view_subclasses:
+        detail_views.extend(detail_view_subclass.__subclasses__())
 
     for command_view in command_views:
         command_view = command_view(config.bot, config.dp)
@@ -46,6 +48,9 @@ async def register_views(router: Router):
         for transition in transitions:
             code = f"""state_view.handle_transition_{transition["field"]}(router=router)"""
             exec(code, globals(), locals())
+    for detail_view in detail_views:
+        detail_view = detail_view(config.bot, config.dp)
+        await detail_view.handle(router)
 
 reply_keyboard_buttons = templates.ReplyKeyboardButtonView.__subclasses__()
 commands_var = templates.CommandView.__subclasses__()

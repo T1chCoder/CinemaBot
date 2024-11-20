@@ -1,5 +1,4 @@
-from . import templates
-from aiogram.types import Message
+from . import templates, models
 
 #Views
 class HomeView(templates.TemplateView):
@@ -109,6 +108,26 @@ class HelpView(templates.TemplateView):
     "Если у вас есть вопросы или предложения, не стесняйтесь обратиться к нам! 📩"
 )
 
-#List-Views
+# List-Views
 class MovieListView(templates.ListView):
     pass
+
+# Detail-Views
+class MovieDetailView(templates.DetailView):
+    model = models.Movie
+    context_name = model.__tablename__
+
+    async def info(self, item):
+        async def message():
+            text = (
+                f"""🎬 **Название фильма:** {item.title}\n"""
+                f"""🌍 **Страна:** {item.country_uuid}\n""" 
+                f"""⏱️ **Длительность:** {item.duration} минут\n"""
+                f"""📅 **Дата выпуска:** {item.released_at}\n"""
+                f"""⭐ **Рейтинг:** {item.rating}\n"""
+                f"""Это настоящий шедевр, который стоит увидеть! 🌟"""
+                )
+            self.text = text
+            return text
+            
+        return {"message": await message()}

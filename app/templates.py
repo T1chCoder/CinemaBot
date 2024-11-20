@@ -232,11 +232,11 @@ class ListView:
     text = None
     markup = None
     data = []
-
+    
     def __init__(self, bot, dp):
         self.bot = bot
         self.dp = dp
-
+    
     def create_markup(self):
         if self.data:
             inline_buttons = []
@@ -245,7 +245,7 @@ class ListView:
                 inline_buttons.append([InlineKeyboardButton(text=item["text"], callback_data=item["callback_data"])])
             
             self.markup = InlineKeyboardMarkup(inline_keyboard=inline_buttons)
-
+    
     async def send_message(self, message):
         await actions.clear_messages(message)
         if self.markup:
@@ -257,9 +257,43 @@ class ListView:
         actions.add_message(sent_message)
         config.Data.page = self.__class__
         actions.add_message(message)
-
+    
     async def handle(self, message, text, data):
         self.data = data
         self.text = text
         self.create_markup()
         await self.send_message(message)
+
+class DetailView:
+    model = None 
+    context_name = None
+    markup = None
+    items = []
+    items_uuid = []
+    text = None
+    
+    def __init__(self, bot, dp):
+        self.bot = bot 
+        self.dp = dp
+    
+    async def send_message(self, message):
+        await actions.clear_messages(message)
+        if self.markup:
+            markup = self.markup
+        else:
+            markup = ReplyKeyboardRemove()
+        self.text = self.text.replace("!", r"\!").replace(".", r"\.").replace("-", r"\-").replace('"', r'\"')
+        sent_message = await message.answer(self.text, reply_markup=markup, parse_mode='MarkdownV2')
+        actions.add_message(sent_message)
+        config.Data.page = self.__class__
+        actions.add_message(message)
+    
+    async def handle(self, router: Router):
+        self.items = await actions.db.get(self.model)
+        for item in self.items:
+            self.items_uuid.append(f"{self.context_name}_{item.uuid}")
+        if self.items:
+            @router.callback_query(lambda c: c.data in self.items_uuid)
+            async def detail_view_handler(callback_query: CallbackQuery):
+                await self.info(await actions.db.get(self.model, uuid=callback_query.data.replace(f"{self.context_name}_", "")))
+                await self.send_message(callback_query.message)

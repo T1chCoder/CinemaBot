@@ -1,4 +1,3 @@
-import config
 from app import views, states
 from app import templates
 

@@ -1,9 +1,6 @@
-from aiogram import Bot, Dispatcher
-from aiogram import Router
+from aiogram import Bot
 from app.handlers import router, register_views
-from aiogram.filters import Command
 from sqlalchemy.exc import OperationalError
-from aiogram.types import Message
 import config
 import asyncio
 import logging
@@ -18,6 +15,7 @@ async def on_start(bot: Bot):
     else:
         logging.info("Webhook deleted successfully")
 
+
 async def init_db():
     try:
         async with db.engine.begin() as conn:
@@ -27,8 +25,7 @@ async def init_db():
         print("INFO:sqlalchemy.engine.Engine:Error occured while connecting to Database: ", e)
 
 async def main():
-    if bool(config.Data.db):
-        await init_db()
+    await init_db()
     await register_views(router)
     config.dp.include_router(router)
     await on_start(config.bot)
@@ -39,4 +36,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        logging.info("INFO:aiogram.dispatcher:Process interrupted, shutting down gracefully")
+        logging.info("Process interrupted, shutting down gracefully")

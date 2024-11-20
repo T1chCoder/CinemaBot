@@ -1,4 +1,3 @@
-from sqlalchemy.dialects.postgresql import UUID
 import sqlalchemy.orm as orm
 import sqlalchemy as sql 
 import datetime
@@ -11,7 +10,7 @@ class Country(db.Base):
     __tablename__ = "countries"
     # ID's
     id = sql.Column(sql.Integer, primary_key=True, autoincrement=True)
-    uuid = sql.Column(sql.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    uuid = sql.Column(sql.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4))
     # Body
     title = sql.Column(sql.String(250), nullable=False)
     # Links
