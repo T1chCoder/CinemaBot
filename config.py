@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
 from aiogram import Bot, Dispatcher
-from aiogram.types import Message
 from dotenv import load_dotenv
 from app import views
 import os
@@ -26,3 +25,6 @@ class Data:
     echo = True
     blocked_users = []
     list_items = 10
+
+class CustomError(Exception):
+    pass

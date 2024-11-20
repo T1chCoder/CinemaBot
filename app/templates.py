@@ -81,7 +81,7 @@ class TemplateView:
             markup = self.markup
         else:
             markup = ReplyKeyboardRemove()
-        self.text = self.text.replace("!", r"\!").replace(".", r"\.")
+        self.text = self.text.replace("!", r"\!").replace(".", r"\.").replace("-", r"\-").replace('"', r'\"')
         sent_message = await message.answer(self.text, reply_markup=markup, parse_mode='MarkdownV2')
         actions.add_message(sent_message)
         config.Data.page = self.__class__
@@ -196,7 +196,7 @@ def {function_title}(self, router: Router):
         await state.update_data({transition['field']}=message.text)
         if {len(self.transitions) - 1} == {id}:
             data = await state.get_data()
-            self.success_val = self.success(data)
+            self.success_val = await self.success(data)
             await state.clear()
             config.Data.echo = True
             self.success_message = message
@@ -252,7 +252,7 @@ class ListView:
             markup = self.markup
         else:
             markup = ReplyKeyboardRemove()
-        self.text = self.text.replace("!", r"\!").replace(".", r"\.")
+        self.text = self.text.replace("!", r"\!").replace(".", r"\.").replace("-", r"\-").replace('"', r'\"')
         sent_message = await message.answer(self.text, reply_markup=markup, parse_mode='MarkdownV2')
         actions.add_message(sent_message)
         config.Data.page = self.__class__

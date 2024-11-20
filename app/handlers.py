@@ -1,4 +1,4 @@
-from . import actions, views, templates, middlewares, states, commands
+from . import actions, views, templates, middlewares, states, commands, models
 from .keyboard import inline, reply
 import config
 from aiogram import F, Router
