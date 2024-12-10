@@ -1,11 +1,12 @@
 # Telegram Bot
 
 <p align='center'>
+  <img src="https://img.shields.io/badge/Telegram-0088CC?logo=telegram&logoColor=white" alt="Telegram" />
   <img src="https://img.shields.io/badge/Aiogram-00A9E0?logo=python&logoColor=white" alt="Aiogram" />
-  <img src="https://img.shields.io/badge/Python-306998?logo=python&logoColor=white"  alt=""/>
+  <img src="https://img.shields.io/badge/Python-306998?logo=python&logoColor=white"  alt="Python"/>
   <img src="https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white" alt="MySQL" />
   <img src="https://img.shields.io/badge/SQLAlchemy-101F1F?logo=python&logoColor=white" alt="SQLAlchemy" />
-  <img src="https://img.shields.io/badge/Github-2C2C2C?logo=github&logoColor=white"  alt=""/>
+  <img src="https://img.shields.io/badge/Github-2C2C2C?logo=github&logoColor=white"  alt="GitHub"/>
 </p>
 
 <hr class="dotted">
