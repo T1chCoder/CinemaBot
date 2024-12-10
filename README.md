@@ -15,7 +15,7 @@ It is a robust online shopping website crafted with the Django Rest Framework, o
 ## Screenshots
 
 ### Bot
-![App Screenshot](https://i.imgur.com/itySk8M.png)
+![App Screenshot](https://i.imgur.com/uD1M4l4.png)
 
 ## About this Project:
 
