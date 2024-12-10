@@ -3,110 +3,110 @@ from . import templates, models
 #Views
 class HomeView(templates.TemplateView):
     text = (
-        "🎥 *Добро пожаловать в CinemaBot!* 🍿\n\n"
-        "CinemaBot — ваш персональный гид по миру кино прямо в Telegram! 🚀\n\n"
-        "🌟 *Что может CinemaBot?*\n\n"
-        "🔍 *Поиск фильмов*: Узнайте всё о любом фильме — сюжет, актеры, жанр и многое другое.\n"
-        "⭐️ *Рецензии и рейтинги*: Читайте отзывы и смотрите рейтинги от популярных сервисов.\n"
-        "🎞 *Трейлеры и кадры*: Просматривайте трейлеры и галереи фильмов, которые вы любите.\n"
-        "🤖 *Рекомендации*: Получайте персональные подборки фильмов на основе ваших вкусов.\n"
-        "🕒 *Расписание кинотеатров*: Находите ближайшие сеансы и покупайте билеты.\n"
-        "📰 *Новости кино*: Следите за горячими новостями и премьерами!\n\n"
-        "👉 [Добавьте CinemaBot в свой Telegram](https://t.me/CinemaBot)\n"
+        "🎥 *Welcome to CinemaBot!* 🍿\n\n"
+        "CinemaBot is your personal guide to the world of cinema, right in Telegram! 🚀\n\n"
+        "🌟 *What can CinemaBot do?*\n\n"
+        "🔍 *Movie Search*: Discover everything about any movie — plot, cast, genre, and more.\n"
+        "⭐️ *Reviews and Ratings*: Read reviews and check ratings from popular services.\n"
+        "🎞 *Trailers and Stills*: Watch trailers and browse galleries of the movies you love.\n"
+        "🤖 *Recommendations*: Get personalized movie picks based on your preferences.\n"
+        "🕒 *Cinema Showtimes*: Find nearby screenings and buy tickets.\n"
+        "📰 *Movie News*: Stay updated with hot news and premieres!\n\n"
+        "👉 [Add CinemaBot to your Telegram](https://t.me/CinemaBot)\n"
     )
 
 class RecommendedMoviesView(templates.TemplateView):
     text = (
-    "🤖 *Рекомендации от CinemaBot* 🎬\n\n"
-    "Не можете выбрать, что посмотреть? Не переживайте, CinemaBot поможет вам! 🎉\n\n"
-    "На основе ваших предпочтений, вкусов и жанров, бот предложит вам фильмы, которые вы обязательно оцените.\n\n"
-    "🌟 *Как это работает?*\n\n"
-    "1. Ответьте на несколько вопросов, чтобы настроить рекомендации.\n"
-    "2. CinemaBot предложит вам фильмы, которые могут вам понравиться.\n"
-    "3. Вы можете просмотреть подробности о каждом фильме: трейлер, рейтинг, отзывы и многое другое.\n\n"
-    "🎥 Начните получать персонализированные рекомендации прямо сейчас!"
-)
+        "🤖 *CinemaBot Recommendations* 🎬\n\n"
+        "Can't decide what to watch? Don't worry, CinemaBot has got you covered! 🎉\n\n"
+        "Based on your preferences, tastes, and favorite genres, the bot will suggest movies you'll love.\n\n"
+        "🌟 *How does it work?*\n\n"
+        "1. Answer a few questions to customize your recommendations.\n"
+        "2. CinemaBot will suggest movies that match your interests.\n"
+        "3. You can view details for each movie: trailers, ratings, reviews, and more.\n\n"
+        "🎥 Start receiving personalized recommendations right now!"
+    )
     
 class MovieSearchResultView(templates.TemplateView):
     text = (
-        "Найденные"
+        "Found"
         )
 
 class NewMoviesView(templates.TemplateView):
     text = (
-    "✨ *Новинки кино* 🎬\n\n"
-    "Ищете самые свежие фильмы? CinemaBot поможет вам узнать, что только что вышло в кино! 🍿\n\n"
-    "🔥 *Что вас ждет?*\n\n"
-    "📅 Список самых свежих фильмов, которые только что появились в кинотеатрах.\n"
-    "⭐ Рейтинг и отзывы зрителей и критиков.\n"
-    "🎥 Трейлеры новинок — будьте в курсе самых ожидаемых фильмов!\n"
-    "📰 Новости и подробности о премьерах.\n\n"
-    "Нажмите ниже, чтобы увидеть новинки и выбрать фильм для просмотра!"
-)
+        "✨ *New Movie Releases* 🎬\n\n"
+        "Looking for the freshest films? CinemaBot will help you discover what’s just hit the theaters! 🍿\n\n"
+        "🔥 *What to expect?*\n\n"
+        "📅 A list of the latest movies that have just premiered in cinemas.\n"
+        "⭐ Ratings and reviews from viewers and critics.\n"
+        "🎥 Trailers of new releases — stay updated on the most anticipated movies!\n"
+        "📰 News and details about premieres.\n\n"
+        "Click below to see the latest releases and pick a movie to watch!"
+    )
 
 class MovieTrailersView(templates.TemplateView):
     text = (
-    "🎥 *Трейлеры фильмов* 🍿\n\n"
-    "Хотите увидеть, что вас ждет на экране? CinemaBot поможет вам просмотреть самые актуальные трейлеры! 🎬\n\n"
-    "🌟 *Что вас ждет?*\n\n"
-    "📹 Просмотр трейлеров самых ожидаемых фильмов.\n"
-    "🎞 Уникальные кадры и сцены из фильмов, которые скоро выйдут.\n"
-    "🔥 Погружение в атмосферу будущих хитов с помощью трейлеров.\n\n"
-    "Выберите фильм, чтобы увидеть его трейлер, или просто наслаждайтесь подборкой!"
-)
+        "🎥 *Movie Trailers* 🍿\n\n"
+        "Want a sneak peek at what’s coming to the screen? CinemaBot will help you watch the latest trailers! 🎬\n\n"
+        "🌟 *What to expect?*\n\n"
+        "📹 Watch trailers of the most anticipated movies.\n"
+        "🎞 Exclusive clips and scenes from upcoming releases.\n"
+        "🔥 Immerse yourself in the atmosphere of future blockbusters through trailers.\n\n"
+        "Select a movie to watch its trailer, or simply enjoy the collection!"
+    )
 
 class MovieRatingsView(templates.TemplateView):
     text = (
-    "🌟 *Рейтинг фильмов* 🎬\n\n"
-    "Хотите узнать, как оценивают фильмы зрители и критики? CinemaBot подскажет вам, какие фильмы заслуживают вашего внимания! 🍿\n\n"
-    "⭐ *Что вас ждет?*\n\n"
-    "📊 Подробные рейтинги фильмов на популярных платформах, таких как IMDb, Rotten Tomatoes и других.\n"
-    "🎥 Рецензии и оценки критиков.\n"
-    "👥 Рейтинг зрителей — как оценивают фильм обычные зрители.\n\n"
-    "Выберите фильм, чтобы увидеть его рейтинг, или просто исследуйте лучшие фильмы по рейтингам!"
-)
+        "🌟 *Movie Ratings* 🎬\n\n"
+        "Want to know how movies are rated by audiences and critics? CinemaBot will guide you to the films worth your attention! 🍿\n\n"
+        "⭐ *What to expect?*\n\n"
+        "📊 Detailed movie ratings from popular platforms like IMDb, Rotten Tomatoes, and more.\n"
+        "🎥 Reviews and critiques from professionals.\n"
+        "👥 Viewer ratings — see how regular audiences rate the movie.\n\n"
+        "Select a movie to view its rating, or explore the top-rated films!"
+    )
 
 class TheatreSessionsView(templates.TemplateView):
     text = (
-    "🎬 *Сеансы кинотеатров* 🍿\n\n"
-    "Хотите узнать, когда можно посмотреть свой любимый фильм? CinemaBot поможет вам найти ближайшие сеансы! 🕒\n\n"
-    "🌟 *Что вас ждет?*\n\n"
-    "📅 Расписание сеансов в ближайших кинотеатрах.\n"
-    "🎥 Информация о фильмах, которые идут в кинотеатре в данный момент.\n"
-    "📍 Поиск сеансов по вашему местоположению.\n"
-    "🎫 Возможность забронировать билеты на выбранный сеанс.\n\n"
-    "Введите название фильма или выберите кинотеатр, чтобы увидеть доступные сеансы."
-)
+        "🎬 *Cinema Showtimes* 🍿\n\n"
+        "Want to know when you can watch your favorite movie? CinemaBot will help you find the nearest showtimes! 🕒\n\n"
+        "🌟 *What to expect?*\n\n"
+        "📅 Showtimes at nearby cinemas.\n"
+        "🎥 Information about movies currently playing in theaters.\n"
+        "📍 Search for showtimes based on your location.\n"
+        "🎫 Option to book tickets for your selected showtime.\n\n"
+        "Enter the movie title or select a cinema to see available showtimes."
+    )
 
 class MovieNewsView(templates.TemplateView):
     text = (
-    "📰 *Новости кино* 🎬\n\n"
-    "Хотите быть в курсе всех новинок, премьеров и слухов из мира кино? CinemaBot собрал для вас самые горячие новости! 🌟\n\n"
-    "🔥 *Что вас ждет?*\n\n"
-    "📅 Последние новости о фильмах и сериалах.\n"
-    "🎞 Анонсы предстоящих премьер и событий.\n"
-    "🎬 Интервью с актерами и режиссерами.\n"
-    "📝 Обзоры и новости индустрии кино.\n\n"
-    "Выберите новость, чтобы узнать подробности, или просто следите за свежими обновлениями!"
-)
+        "📰 *Movie News* 🎬\n\n"
+        "Want to stay updated on all the latest releases, premieres, and rumors from the world of cinema? CinemaBot has gathered the hottest news just for you! 🌟\n\n"
+        "🔥 *What to expect?*\n\n"
+        "📅 The latest updates on movies and TV series.\n"
+        "🎞 Announcements of upcoming premieres and events.\n"
+        "🎬 Interviews with actors and directors.\n"
+        "📝 Reviews and news from the film industry.\n\n"
+        "Select a news story to learn more, or simply keep an eye on the latest updates!"
+    )
 
 class HelpView(templates.TemplateView):
     text = (
-    "❓ *Помощь* 📝\n\n"
-    "Вы не знаете, как использовать CinemaBot? Не переживайте, мы вам поможем! 🚀\n\n"
-    "🎬 *Что может CinemaBot?*\n\n"
-    "1. 🔍 *Поиск фильмов* — узнайте подробную информацию о любых фильмах.\n"
-    "2. ⭐️ *Рейтинги и рецензии* — читайте отзывы зрителей и критиков.\n"
-    "3. 🎞 *Трейлеры* — смотрите трейлеры самых ожидаемых фильмов.\n"
-    "4. 🕒 *Сеансы кинотеатров* — найдите ближайшие сеансы и купите билеты.\n"
-    "5. 📰 *Новости кино* — следите за свежими новинками и анонсами.\n"
-    "6. 🤖 *Рекомендации* — получайте персональные рекомендации по фильмам.\n\n"
-    "🛠 *Как начать?*\n\n"
-    "1. Используйте команды или кнопки в меню для навигации по боту.\n"
-    "2. Введите название фильма или выберите одну из категорий для поиска.\n"
-    "3. Следите за новинками, рейтингами и новостями в мире кино.\n\n"
-    "Если у вас есть вопросы или предложения, не стесняйтесь обратиться к нам! 📩"
-)
+        "❓ *Help* 📝\n\n"
+        "Don't know how to use CinemaBot? Don't worry, we're here to help! 🚀\n\n"
+        "🎬 *What can CinemaBot do?*\n\n"
+        "1. 🔍 *Movie Search* — get detailed information about any movie.\n"
+        "2. ⭐️ *Ratings and Reviews* — read audience and critic reviews.\n"
+        "3. 🎞 *Trailers* — watch trailers for the most anticipated movies.\n"
+        "4. 🕒 *Cinema Showtimes* — find nearby showtimes and buy tickets.\n"
+        "5. 📰 *Movie News* — stay updated with the latest releases and announcements.\n"
+        "6. 🤖 *Recommendations* — get personalized movie suggestions.\n\n"
+        "🛠 *How to get started?*\n\n"
+        "1. Use commands or menu buttons to navigate the bot.\n"
+        "2. Enter a movie title or select a category to search.\n"
+        "3. Keep track of new releases, ratings, and news in the movie world.\n\n"
+        "If you have any questions or suggestions, feel free to reach out to us! 📩"
+    )
 
 # List-Views
 class MovieListView(templates.ListView):
@@ -120,13 +120,13 @@ class MovieDetailView(templates.DetailView):
     async def info(self, item):
         async def message():
             text = (
-                f"""🎬 **Название фильма:** {item.title}\n"""
-                f"""🌍 **Страна:** {item.country_uuid}\n""" 
-                f"""⏱️ **Длительность:** {item.duration} минут\n"""
-                f"""📅 **Дата выпуска:** {item.released_at}\n"""
-                f"""⭐ **Рейтинг:** {item.rating}\n"""
-                f"""Это настоящий шедевр, который стоит увидеть! 🌟"""
-                )
+                f"""🎬 **Movie Title:** {item.title}\n"""
+                f"""🌍 **Country:** {item.country_uuid}\n"""
+                f"""⏱️ **Duration:** {item.duration} minutes\n"""
+                f"""📅 **Release Date:** {item.released_at}\n"""
+                f"""⭐ **Rating:** {item.rating}\n"""
+                f"""This is a true masterpiece worth seeing! 🌟"""
+            )
             self.text = text
             return text
             

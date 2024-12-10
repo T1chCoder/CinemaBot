@@ -13,8 +13,11 @@ async def clear_messages(message):
                 try:
                     await config.bot.delete_message(chat_id=saved_message["chat_id"], message_id=saved_message["id"])
                     messages_to_remove.append(saved_message)
-                except aiogram.exceptions.MessageNotFound:
-                    print(f"Message {saved_message['id']} not found.")
+                except aiogram.exceptions.TelegramAPIError as e:
+                    if "message to delete not found" in str(e):
+                        config.Data.messages.remove(saved_message)
+                    else:
+                        print(f"Error occurred while deleting message: {e}")
                 except Exception as e:
                     print(f"Error occurred while deleting message: {e}")
                     break

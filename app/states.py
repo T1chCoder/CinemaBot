@@ -2,44 +2,57 @@ from . import templates, views, actions, models
 
 class MovieSearchStateView(templates.StateView):
     transitions = [
-        {"text": (
-        "🔍 *Поиск фильма*\n\n"
-        "Введите название фильма или выберите жанр для поиска. 🎬\n\n"
-        "*CinemaBot* поможет вам найти информацию о любых фильмах, включая:\n"
-        "📅 Дату выхода\n"
-        "⭐ Рейтинг и рецензии\n"
-        "🎥 Трейлеры\n"
-        "🎭 Состав актеров\n"
-        "📰 Новости и обновления\n\n"
-        "Вы можете ввести только название фильма или использовать фильтры по жанрам для более точных результатов.\n\n"
-        "Введите название фильма или выберите жанр ниже!"
-    ), "field": "text"},
+        {
+            "text": (
+                "🔍 *Movie Search*\n\n"
+                "Enter the movie title or choose a genre to search. 🎬\n\n"
+                "*CinemaBot* will help you find information about any movie, including:\n"
+                "📅 Release Date\n"
+                "⭐ Rating and Reviews\n"
+                "🎥 Trailers\n"
+                "🎭 Cast\n"
+                "📰 News and Updates\n\n"
+                "You can either enter just the movie title or use genre filters for more accurate results.\n\n"
+                "Enter the movie title or select a genre below!"
+            ),
+            "field": "text"
+        },
     ]
     redirect_to = views.MovieListView
-    async def success(self, data): 
+
+    async def success(self, data):
         typed_text = data["text"]
+
         async def items():
             model = models.Movie
             found_movies = await actions.db.search(model, field="title", text=typed_text)
             inline_buttons = []
             for found_movie in found_movies:
-                inline_buttons.append({"text": found_movie.title, "callback_data": f"{model.__tablename__}_{found_movie.uuid.lower()}"})
+                inline_buttons.append({
+                    "text": found_movie.title, 
+                    "callback_data": f"{model.__tablename__}_{found_movie.uuid.lower()}"
+                })
             return inline_buttons
+
         async def message():
             found_movies_count = len(await items())
             if found_movies_count > 0:
                 text = (
-                    f"🎬 **По запросу** \"\u200B**{typed_text}**\u200B\" **найдено** {found_movies_count} {'кинофильм' if found_movies_count == 1 else 'кинофильмов'}!\n"
-                    f"🔍 Вот что мы нашли для вас:\n"
-                    f"✅ Всё, что нужно, чтобы провести время с этим великолепным жанром!\n\n"
-                    f"✨ Каждое из них — шедевр, который стоит вашего внимания! 🌟"
-                    )
+                    f"🎬 **Search results for** \"\u200B**{typed_text}**\u200B\" **found** {found_movies_count} {'movie' if found_movies_count == 1 else 'movies'}!\n"
+                    f"🔍 Here's what we found for you:\n"
+                    f"✅ Everything you need to enjoy this great genre!\n\n"
+                    f"✨ Each one is a masterpiece worth your attention! 🌟"
+                )
             else:
                 text = (
-                    f"😔 **По запросу** \"\u200B**{typed_text}**\u200B\" **ничего не найдено!**\n\n"
-                    f"🔍 Мы постарались найти для вас что-то поинтереснее, но ничего не нашли.\n"
-                    f"✨ Попробуйте изменить запрос или проверьте орфографию!\n\n"
-                    f"💡 Может быть, хотите попробовать что-то другое? Мы всегда готовы помочь!"
-                    )
+                    f"😔 **No results found** for \"\u200B**{typed_text}**\u200B\"!\n\n"
+                    f"🔍 We tried to find something interesting for you, but couldn't find anything.\n"
+                    f"✨ Try changing your search or check the spelling!\n\n"
+                    f"💡 Maybe you'd like to try something else? We're always ready to help!"
+                )
             return text
-        return {"items": await items(), "message": await message()}
+
+        return {
+            "items": await items(),
+            "message": await message()
+        }
