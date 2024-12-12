@@ -1,4 +1,21 @@
-from . import templates, models
+from . import templates, models, actions
+import asyncio
+
+# List-Views
+class MovieSearchListView(templates.ListView):
+    pass 
+
+class RecommendedMovieListView(templates.ListView):
+    pass
+
+class NewMovieListView(templates.ListView):
+    pass
+
+class MovieTrailerListView(templates.ListView):
+    pass
+
+class MovieRatingListView(templates.ListView):
+    pass
 
 #Views
 class HomeView(templates.TemplateView):
@@ -17,15 +34,30 @@ class HomeView(templates.TemplateView):
 
 class RecommendedMoviesView(templates.TemplateView):
     text = (
-        "🤖 *CinemaBot Recommendations* 🎬\n\n"
-        "Can't decide what to watch? Don't worry, CinemaBot has got you covered! 🎉\n\n"
-        "Based on your preferences, tastes, and favorite genres, the bot will suggest movies you'll love.\n\n"
-        "🌟 *How does it work?*\n\n"
-        "1. Answer a few questions to customize your recommendations.\n"
-        "2. CinemaBot will suggest movies that match your interests.\n"
-        "3. You can view details for each movie: trailers, ratings, reviews, and more.\n\n"
-        "🎥 Start receiving personalized recommendations right now!"
+        "✨ *Movie recommendations for You!* 🎬\n\n"
+        "We’ve picked out some amazing movies that we think you'll love! Based on your interests, here are some top picks to explore 🔥\n\n"
+        "👇 Click on a movie to discover more:"
     )
+    text_no = (
+        "😞 *No movie recommendations at the moment.* 🎥\n\n"
+        "Unfortunately, we don’t have any recommendations for you at the moment. But don’t worry, our collection is constantly growing! 🌟\n\n"
+        "🔄 Check back later for more personalized suggestions or explore other categories in the meantime!"
+    )
+    list = True
+    redirect_to = RecommendedMovieListView
+    
+    async def items(self):
+        model = models.Movie 
+        recommended_movies = await actions.db.get(model)
+        inline_buttons = []
+        
+        for recommended_movie in recommended_movies:
+            inline_buttons.append({
+                "text": recommended_movie.title, 
+                "callback_data": f"{model.__tablename__}_{recommended_movie.uuid.lower()}"
+            })
+            
+        return inline_buttons
     
 class MovieSearchResultView(templates.TemplateView):
     text = (
@@ -34,37 +66,84 @@ class MovieSearchResultView(templates.TemplateView):
 
 class NewMoviesView(templates.TemplateView):
     text = (
-        "✨ *New Movie Releases* 🎬\n\n"
-        "Looking for the freshest films? CinemaBot will help you discover what’s just hit the theaters! 🍿\n\n"
-        "🔥 *What to expect?*\n\n"
-        "📅 A list of the latest movies that have just premiered in cinemas.\n"
-        "⭐ Ratings and reviews from viewers and critics.\n"
-        "🎥 Trailers of new releases — stay updated on the most anticipated movies!\n"
-        "📰 News and details about premieres.\n\n"
-        "Click below to see the latest releases and pick a movie to watch!"
+        "✨ *New movie releases* 🎬\n\n"
+        "Get ready for the latest and greatest movies hitting the big screen! Check out these exciting releases and click below to learn more about each one. Don't miss out on the action, adventure, and drama coming your way! 🎥✨\n\n"
+        "👇 Choose a movie to explore more:"
     )
+    text_no = (
+        "😞 *No new movie releases at the moment* 🎥\n\n"
+        "It looks like there are no fresh movie releases right now, but don't worry — new films are coming soon! 🎬 Stay tuned for exciting updates and upcoming releases! 🌟\n\n"
+        "🔄 Check back later for the latest movie updates and explore other categories in the meantime!"
+    )
+    list = True
+    redirect_to = MovieSearchListView
+    
+    async def items(self):
+        model = models.Movie 
+        new_movies = await actions.db.get(model)
+        inline_buttons = []
+        
+        for new_movie in new_movies:
+            inline_buttons.append({
+                "text": new_movie.title, 
+                "callback_data": f"{model.__tablename__}_{new_movie.uuid.lower()}"
+            })
+        
+        return inline_buttons
 
 class MovieTrailersView(templates.TemplateView):
     text = (
         "🎥 *Movie Trailers* 🍿\n\n"
-        "Want a sneak peek at what’s coming to the screen? CinemaBot will help you watch the latest trailers! 🎬\n\n"
-        "🌟 *What to expect?*\n\n"
-        "📹 Watch trailers of the most anticipated movies.\n"
-        "🎞 Exclusive clips and scenes from upcoming releases.\n"
-        "🔥 Immerse yourself in the atmosphere of future blockbusters through trailers.\n\n"
-        "Select a movie to watch its trailer, or simply enjoy the collection!"
+        "Get a sneak peek at the hottest upcoming movies! Watch the official trailers and get excited about the action, drama, and thrills coming soon to theaters. 🎥✨\n\n"
+        "👇 Choose a movie to watch trailers:"
     )
+    text_no = (
+        "😞 *No movie trailers available right now* 🎬\n\n"
+        "It seems like we don't have any trailers at the moment, but don't worry — more exciting content is coming soon! 🎥 Stay tuned for the latest trailers and updates on upcoming movies! 🌟\n\n"
+        "🔄 Check back later for fresh trailers or explore other sections for more movie info!"
+    )
+    list = True
+    redirect_to = MovieTrailerListView
+    
+    async def items(self):
+        model = models.Movie 
+        selected_movies = await actions.db.get(model)
+        inline_buttons = []
+        
+        for selected_movie in selected_movies:
+            inline_buttons.append({
+                "text": selected_movie.title, 
+                "callback_data": f"{model.__tablename__}_{selected_movie.uuid.lower()}"
+            })
+        
+        return inline_buttons
 
 class MovieRatingsView(templates.TemplateView):
     text = (
         "🌟 *Movie Ratings* 🎬\n\n"
-        "Want to know how movies are rated by audiences and critics? CinemaBot will guide you to the films worth your attention! 🍿\n\n"
-        "⭐ *What to expect?*\n\n"
-        "📊 Detailed movie ratings from popular platforms like IMDb, Rotten Tomatoes, and more.\n"
-        "🎥 Reviews and critiques from professionals.\n"
-        "👥 Viewer ratings — see how regular audiences rate the movie.\n\n"
-        "Select a movie to view its rating, or explore the top-rated films!"
+        "Want to know what others think about the latest movies? Read reviews and check ratings from popular services to help you decide what to watch next! 📽️✨\n\n"
+        "👇 Choose a movie to see reviews:"
     )
+    text_no = (
+        "😞 No movie options available at the moment 🎬\n\n"
+        "It seems we don't have any movies to display right now. We're constantly updating our list, so check back soon for more options! 🌟\n\n"
+        "🔄 Stay tuned for new movie releases and exciting content!"
+    )
+    list = True 
+    redirect_to = MovieRatingListView
+    
+    async def items(self):
+        model = models.Movie 
+        selected_movies = await actions.db.get(model)
+        inline_buttons = []
+        
+        for selected_movie in selected_movies:
+            inline_buttons.append({
+                "text": selected_movie.title, 
+                "callback_data": f"{model.__tablename__}_{selected_movie.uuid.lower()}"
+            })
+        
+        return inline_buttons
 
 class TheatreSessionsView(templates.TemplateView):
     text = (
@@ -107,11 +186,7 @@ class HelpView(templates.TemplateView):
         "3. Keep track of new releases, ratings, and news in the movie world.\n\n"
         "If you have any questions or suggestions, feel free to reach out to us! 📩"
     )
-
-# List-Views
-class MovieListView(templates.ListView):
-    pass
-
+    
 # Detail-Views
 class MovieDetailView(templates.DetailView):
     model = models.Movie
@@ -120,12 +195,16 @@ class MovieDetailView(templates.DetailView):
     async def info(self, item):
         async def message():
             text = (
-                f"""🎬 **Movie Title:** {item.title}\n"""
-                f"""🌍 **Country:** {item.country_uuid}\n"""
-                f"""⏱️ **Duration:** {item.duration} minutes\n"""
-                f"""📅 **Release Date:** {item.released_at}\n"""
-                f"""⭐ **Rating:** {item.rating}\n"""
-                f"""This is a true masterpiece worth seeing! 🌟"""
+                f"""🎬 *{item.title}*\n\n"""
+                f"""{item.short_description}\n\n"""
+                f"""💡 *What Awaits You?*\n\n"""
+                f"""{item.description}\n\n"""
+                f"""📜 *Details:*\n\n"""
+                f"""🌍 *Country:* {item.country_uuid}\n"""
+                f"""⏱️ *Duration:* {actions.sec_to_hms(item.duration)}\n"""
+                f"""📅 *Release date:* {item.released_at.strftime("%d %B %Y")}\n"""
+                f"""⭐ *Rating:* {item.rating.value} / 5.0\n\n"""
+                f"""🎟 Grab your popcorn and dive into this unforgettable journey! 🍿  """
             )
             self.text = text
             return text

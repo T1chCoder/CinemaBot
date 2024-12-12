@@ -3,6 +3,7 @@ import config
 import aiogram
 import db as database
 import config
+import re
 
 async def clear_messages(message):
     if config.Data.messages and config.Data.message_clear:
@@ -25,9 +26,25 @@ async def clear_messages(message):
         for msg in messages_to_remove:
             config.Data.messages.remove(msg)
 
+def sec_to_hms(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    secs = seconds % 60
+    
+    return f"{int(hours)}:{int(minutes)}:{int(secs)}"
+
 def add_message(message):
     if config.Data.message_clear:
         config.Data.messages.append({"id": message.message_id, "chat_id": message.chat.id})
+
+def text_parse(txt):
+    symbols = ["!", ".", ")", "(", ",", "?"]
+    text = txt
+    
+    for symbol in symbols:
+        text = re.sub(rf'(?<!\\){re.escape(symbol)}', rf'\\{symbol}', text)
+    
+    return text
 
 class db:
     @staticmethod

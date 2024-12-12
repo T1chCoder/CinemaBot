@@ -109,6 +109,8 @@ class Movie(db.Base):
         PERFECT = 5.0
     # Body
     title = sql.Column(sql.String(250), nullable=False)
+    short_description = sql.Column(sql.Text, nullable=False)
+    description = sql.Column(sql.Text, nullable=False)
     video_path = sql.Column(sql.String(500), nullable=False)
     thumbnail_path = sql.Column(sql.String(500), nullable=False)
     rating = sql.Column(sql.Enum(RatingChoice), default=RatingChoice.UNRATED, nullable=False)
