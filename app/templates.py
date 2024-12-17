@@ -9,6 +9,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
+import re
 import types
 import config
 from . import actions
@@ -266,6 +267,7 @@ class DetailView:
     items = []
     items_uuid = []
     text = None
+    type = None
     
     def __init__(self, bot, dp):
         self.bot = bot 
@@ -277,7 +279,7 @@ class DetailView:
             markup = self.markup
         else:
             markup = ReplyKeyboardRemove()
-        self.text = self.text.replace("!", r"\!").replace(".", r"\.").replace("-", r"\-").replace('"', r'\"')
+        self.text = actions.text_parse(self.text)
         sent_message = await message.answer(self.text, reply_markup=markup, parse_mode='MarkdownV2')
         actions.add_message(sent_message)
         config.Data.page = self.__class__
@@ -286,9 +288,9 @@ class DetailView:
     async def handle(self, router: Router, state=None):
         self.items = await actions.db.get(self.model)
         for item in self.items:
-            self.items_uuid.append(f"{self.context_name}_{item.uuid}")
+            self.items_uuid.append(item.uuid)
         if self.items:
-            @router.callback_query(lambda c: c.data in self.items_uuid)
+            @router.callback_query(lambda c: re.search(r"(.*?)_uuid_", c.data).group(1) == self.context_name and c.data.split(f"uuid_{re.search(r'uuid_(.*?)_', c.data).group(1)}_")[-1] == self.type and re.search(r"uuid_(.*?)_", c.data).group(1) in self.items_uuid)
             async def detail_view_handler(callback_query: CallbackQuery):
-                await self.info(await actions.db.get(self.model, uuid=callback_query.data.replace(f"{self.context_name}_", "")))
+                await self.info(await actions.db.get(self.model, uuid=re.search(r"uuid_(.*?)_", callback_query.data).group(1)))
                 await self.send_message(callback_query.message)

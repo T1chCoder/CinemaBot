@@ -10,8 +10,6 @@ class SearchReplyButtonView(templates.ReplyKeyboardButtonView):
         views.NewMoviesView, 
         views.MovieTrailersView, 
         views.MovieRatingsView, 
-        views.TheatreSessionsView, 
-        views.MovieNewsView, 
         views.HelpView, 
         views.MovieDetailView
     ]
@@ -26,8 +24,6 @@ class RecommendedMoviesReplyButtonView(templates.ReplyKeyboardButtonView):
         views.NewMoviesView, 
         views.MovieTrailersView, 
         views.MovieRatingsView, 
-        views.TheatreSessionsView, 
-        views.MovieNewsView, 
         views.HelpView, 
         views.MovieDetailView
     ]
@@ -42,8 +38,6 @@ class NewMoviesReplyButtonView(templates.ReplyKeyboardButtonView):
         views.NewMoviesView, 
         views.MovieTrailersView, 
         views.MovieRatingsView, 
-        views.TheatreSessionsView, 
-        views.MovieNewsView, 
         views.HelpView, 
         views.MovieDetailView
     ]
@@ -58,8 +52,6 @@ class MovieTrailersReplyButtonView(templates.ReplyKeyboardButtonView):
         views.NewMoviesView, 
         views.MovieTrailersView, 
         views.MovieRatingsView, 
-        views.TheatreSessionsView, 
-        views.MovieNewsView, 
         views.HelpView, 
         views.MovieDetailView
     ]
@@ -74,15 +66,13 @@ class MovieRatingsReplyButtonView(templates.ReplyKeyboardButtonView):
         views.NewMoviesView, 
         views.MovieTrailersView, 
         views.MovieRatingsView, 
-        views.TheatreSessionsView, 
-        views.MovieNewsView, 
         views.HelpView, 
         views.MovieDetailView
     ]
     redirect_to = views.MovieRatingsView
-
-class MovieNewsReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "📰 News"
+    
+class HelpReplyButtonView(templates.ReplyKeyboardButtonView):
+    text = "❓ Help"
     pages = [
         views.HomeView, 
         views.RecommendedMoviesView, 
@@ -90,25 +80,7 @@ class MovieNewsReplyButtonView(templates.ReplyKeyboardButtonView):
         views.NewMoviesView, 
         views.MovieTrailersView, 
         views.MovieRatingsView, 
-        views.TheatreSessionsView, 
-        views.MovieNewsView, 
         views.HelpView, 
         views.MovieDetailView
     ]
-    redirect_to = views.MovieNewsView
-
-class TheatreSessionsReplyButtonView(templates.ReplyKeyboardButtonView):
-    text = "🎫 Showtimes"
-    pages = [
-        views.HomeView, 
-        views.RecommendedMoviesView, 
-        views.MovieSearchResultView, 
-        views.NewMoviesView, 
-        views.MovieTrailersView, 
-        views.MovieRatingsView, 
-        views.TheatreSessionsView, 
-        views.MovieNewsView, 
-        views.HelpView, 
-        views.MovieDetailView
-    ]
-    redirect_to = views.TheatreSessionsView
+    redirect_to = views.HelpView

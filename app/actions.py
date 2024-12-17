@@ -38,7 +38,7 @@ def add_message(message):
         config.Data.messages.append({"id": message.message_id, "chat_id": message.chat.id})
 
 def text_parse(txt):
-    symbols = ["!", ".", ")", "(", ",", "?"]
+    symbols = ["!", ".", ")", "(", ",", "?", "-", "_"]
     text = txt
     
     for symbol in symbols:

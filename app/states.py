@@ -28,7 +28,7 @@ class MovieSearchStateView(templates.StateView):
             for found_movie in found_movies:
                 inline_buttons.append({
                     "text": found_movie.title, 
-                    "callback_data": f"{model.__tablename__}_{found_movie.uuid.lower()}"
+                    "callback_data": f"{model.__tablename__}_uuid_{found_movie.uuid.lower()}_detail"
                 })
                 
             return inline_buttons

@@ -27,11 +27,3 @@ class MovieTrailersCommandView(templates.CommandView):
 class MovieRatingsCommandView(templates.CommandView):
     text = "ratings"
     redirect_to = views.MovieRatingsView
-
-class TheatreSessionsCommandView(templates.CommandView):
-    text = "showtimes"
-    redirect_to = views.TheatreSessionsView
-
-class MovieNewsCommandView(templates.CommandView):
-    text = "news"
-    redirect_to = views.MovieNewsView

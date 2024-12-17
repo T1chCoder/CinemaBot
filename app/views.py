@@ -1,5 +1,14 @@
 from . import templates, models, actions
-import asyncio
+from datetime import date, timedelta
+from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
+from aiogram.types import (
+    ReplyKeyboardRemove,
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 
 # List-Views
 class MovieSearchListView(templates.ListView):
@@ -54,7 +63,7 @@ class RecommendedMoviesView(templates.TemplateView):
         for recommended_movie in recommended_movies:
             inline_buttons.append({
                 "text": recommended_movie.title, 
-                "callback_data": f"{model.__tablename__}_{recommended_movie.uuid.lower()}"
+                "callback_data": f"{model.__tablename__}_uuid_{recommended_movie.uuid.lower()}_detail"
             })
             
         return inline_buttons
@@ -84,10 +93,12 @@ class NewMoviesView(templates.TemplateView):
         inline_buttons = []
         
         for new_movie in new_movies:
-            inline_buttons.append({
-                "text": new_movie.title, 
-                "callback_data": f"{model.__tablename__}_{new_movie.uuid.lower()}"
-            })
+            thirty_days_ago = date.today() - timedelta(days=30)
+            if new_movie.released_at >= thirty_days_ago:
+                inline_buttons.append({
+                    "text": new_movie.title, 
+                    "callback_data": f"{model.__tablename__}_uuid_{new_movie.uuid.lower()}_detail"
+                })
         
         return inline_buttons
 
@@ -113,7 +124,7 @@ class MovieTrailersView(templates.TemplateView):
         for selected_movie in selected_movies:
             inline_buttons.append({
                 "text": selected_movie.title, 
-                "callback_data": f"{model.__tablename__}_{selected_movie.uuid.lower()}"
+                "callback_data": f"{model.__tablename__}_uuid_{selected_movie.uuid.lower()}_trailers"
             })
         
         return inline_buttons
@@ -139,35 +150,11 @@ class MovieRatingsView(templates.TemplateView):
         
         for selected_movie in selected_movies:
             inline_buttons.append({
-                "text": selected_movie.title, 
-                "callback_data": f"{model.__tablename__}_{selected_movie.uuid.lower()}"
+                "text": f"{selected_movie.title} — {selected_movie.rating.value} ⭐", 
+                "callback_data": f"{model.__tablename__}_uuid_{selected_movie.uuid.lower()}_reviews"
             })
         
         return inline_buttons
-
-class TheatreSessionsView(templates.TemplateView):
-    text = (
-        "🎬 *Cinema Showtimes* 🍿\n\n"
-        "Want to know when you can watch your favorite movie? CinemaBot will help you find the nearest showtimes! 🕒\n\n"
-        "🌟 *What to expect?*\n\n"
-        "📅 Showtimes at nearby cinemas.\n"
-        "🎥 Information about movies currently playing in theaters.\n"
-        "📍 Search for showtimes based on your location.\n"
-        "🎫 Option to book tickets for your selected showtime.\n\n"
-        "Enter the movie title or select a cinema to see available showtimes."
-    )
-
-class MovieNewsView(templates.TemplateView):
-    text = (
-        "📰 *Movie News* 🎬\n\n"
-        "Want to stay updated on all the latest releases, premieres, and rumors from the world of cinema? CinemaBot has gathered the hottest news just for you! 🌟\n\n"
-        "🔥 *What to expect?*\n\n"
-        "📅 The latest updates on movies and TV series.\n"
-        "🎞 Announcements of upcoming premieres and events.\n"
-        "🎬 Interviews with actors and directors.\n"
-        "📝 Reviews and news from the film industry.\n\n"
-        "Select a news story to learn more, or simply keep an eye on the latest updates!"
-    )
 
 class HelpView(templates.TemplateView):
     text = (
@@ -188,25 +175,188 @@ class HelpView(templates.TemplateView):
     )
     
 # Detail-Views
+class MovieAllReviewsDetailView(templates.DetailView):
+    model = models.Movie
+    context_name = model.__tablename__
+    type = "reviews"
+    
+    async def info(self, item):
+        async def message():
+            from db import AsyncSessionLocal
+            
+            async with AsyncSessionLocal() as session:
+                movie = await session.execute(
+                    select(models.Movie)
+                    .options(joinedload(models.Movie.reviews))
+                    .where(models.Movie.id == item.id)
+                )
+                movie = movie.scalars().first()
+
+                if len(movie.reviews) > 0:
+                    text = (
+                        f"""✨ {movie.title}'s reviews ✨\n\n"""
+                        f"""Curious about what others are saying? Dive into a world of opinions, insights, and reactions to discover how this movie has captured hearts and minds.\n\n"""
+                        f"""👇 Choose a review to check:"""
+                    )
+
+                    inline_buttons = []
+
+                    for review in movie.reviews:
+                        sender = await actions.db.get(models.User, uuid=review.user_uuid)
+                        callback_data = f"{models.Review.__tablename__}_uuid_{review.uuid}_detail"
+                        inline_buttons.append([InlineKeyboardButton(text=f"⭐{review.rating.value} — @{sender.username}", callback_data=callback_data)])
+
+                    self.markup = InlineKeyboardMarkup(inline_keyboard=inline_buttons)
+                else:
+                    text = (
+                        f"""😕 No reviews found for {movie.title} 😕\n\n"""
+                        f"""It seems like no one has shared their thoughts on this movie yet. Be the first to leave a review and let others know your opinion!\n\n"""
+                        f"""🔍 Keep exploring or add your own review!"""
+                    )
+                
+                self.text = text
+                
+                return text
+            
+        return {"message": await message()}
+
+class MovieAllTrailersDetailView(templates.DetailView):
+    model = models.Movie
+    context_name = model.__tablename__
+    type = "trailers"
+    
+    async def info(self, item):
+        async def message():
+            from db import AsyncSessionLocal
+            
+            async with AsyncSessionLocal() as session:
+                movie = await session.execute(
+                    select(models.Movie)
+                    .options(joinedload(models.Movie.trailers))
+                    .where(models.Movie.id == item.id)
+                )
+                movie = movie.scalars().first()
+                
+                if len(movie.trailers) > 0:
+                    text = (
+                        f"""✨ {movie.title}'s trailers ✨\n\n"""
+                        f"""Step into a world of captivating stories, breathtaking visuals, and unforgettable emotions. This cinematic journey awaits, and it all begins with a sneak peek.\n\n"""
+                        f"""👇 Choose a trailer to watch:"""
+                    )
+                    
+                    inline_buttons = []
+
+                    for trailer in movie.trailers:
+                        callback_data = f"{models.Trailer.__tablename__}_uuid_{trailer.uuid}_detail"
+                        inline_buttons.append([InlineKeyboardButton(text=f"{trailer.title}", callback_data=callback_data)])
+
+                    self.markup = InlineKeyboardMarkup(inline_keyboard=inline_buttons)
+                else:
+                    text = (
+                        f"""😕 No trailers found for {movie.title} 😕\n\n"""
+                        f"""Looks like there are no previews available for this movie right now. Stay tuned for updates, or check out other films to explore more exciting content!\n\n"""
+                        f"""🔍 Keep exploring or add a trailer if you have one!"""
+                    )
+                    
+                self.text = text
+                
+                return text
+
+        return {"message": await message()}
+
 class MovieDetailView(templates.DetailView):
     model = models.Movie
     context_name = model.__tablename__
+    type = "detail"
 
     async def info(self, item):
         async def message():
+            country = await actions.db.get(models.Country, uuid=item.country_uuid)
+            
             text = (
-                f"""🎬 *{item.title}*\n\n"""
+                f"""🎬 Movie *{item.title}*\n\n"""
                 f"""{item.short_description}\n\n"""
                 f"""💡 *What Awaits You?*\n\n"""
                 f"""{item.description}\n\n"""
-                f"""📜 *Details:*\n\n"""
-                f"""🌍 *Country:* {item.country_uuid}\n"""
-                f"""⏱️ *Duration:* {actions.sec_to_hms(item.duration)}\n"""
-                f"""📅 *Release date:* {item.released_at.strftime("%d %B %Y")}\n"""
-                f"""⭐ *Rating:* {item.rating.value} / 5.0\n\n"""
+                f"""📜 *Details*\n\n"""
+                f"""🌍 Country: {country.title}\n"""
+                f"""⏱️ Duration: {actions.sec_to_hms(item.duration)}\n"""
+                f"""📅 Release date: {item.released_at.strftime("%d %B %Y")}\n"""
+                f"""⭐ Rating: {item.rating.value} / 5.0\n\n"""
                 f"""🎟 Grab your popcorn and dive into this unforgettable journey! 🍿  """
             )
+            
+            inline_buttons = []
+
+            inline_buttons.append([InlineKeyboardButton(text="Watch", url=item.url)])
+            inline_buttons.append([InlineKeyboardButton(text="Trailers", callback_data=f"{self.model.__tablename__}_uuid_{item.uuid}_{models.Trailer}")])
+            inline_buttons.append([InlineKeyboardButton(text="Reviews", callback_data=f"{self.model.__tablename__}_uuid_{item.uuid}_{models.Review.__tablename__}")])
+                
+            self.markup = InlineKeyboardMarkup(inline_keyboard=inline_buttons)
             self.text = text
+            
+            return text
+            
+        return {"message": await message()}
+    
+class ReviewDetailView(templates.DetailView):
+    model = models.Review
+    context_name = model.__tablename__
+    type = "detail"
+
+    async def info(self, item):
+        async def message():
+            sender = await actions.db.get(models.User, uuid=item.user_uuid)
+            movie = await actions.db.get(models.Movie, uuid=item.movie_uuid)
+            
+            text = (
+                f"""🌟 Review for the movie *{movie.title}* 🌟\n\n"""
+                f"""🖋️ Reviewed by @{sender.username}\n"""
+                f"""🔥 {item.rating.name.capitalize()} — {item.rating.value} / 5.0 ⭐\n\n"""
+                f"""{item.comment}\n\n"""
+                f"""⏰ Submitted on {item.created_at.strftime("%d %B %Y")}"""
+            )
+            
+            inline_buttons = []
+
+            inline_buttons.append([InlineKeyboardButton(text="Back", callback_data=f"{models.Movie.__tablename__}_uuid_{movie.uuid}_{models.Review.__tablename__}")])
+                
+            self.markup = InlineKeyboardMarkup(inline_keyboard=inline_buttons)
+            self.text = text
+            
+            return text
+            
+        return {"message": await message()}
+    
+class TrailerDetailView(templates.DetailView):
+    model = models.Trailer
+    context_name = model.__tablename__
+    type = "detail"
+
+    async def info(self, item):
+        async def message():
+            movie = await actions.db.get(models.Movie, uuid=item.movie_uuid)
+            
+            text = (
+                f"""Trailer for the movie *{movie.title}*\n\n"""
+                f"""{item.title}\n\n"""
+                f"""*What awaits you?*\n\n"""
+                f"""{item.description}\n\n"""
+                f"""*Details*\n\n"""
+                f"""❤️ Likes: {item.likes}\n"""
+                f"""💬 Comments: {item.comments}\n"""
+                f"""📅 Release date: {item.created_at.strftime("%d %B %Y")}\n\n"""
+                f"""🎬 Get ready for an epic ride — popcorn in hand! 🍿"""
+            )
+            
+            inline_buttons = []
+
+            inline_buttons.append([InlineKeyboardButton(text="Watch", url=item.url)])
+            inline_buttons.append([InlineKeyboardButton(text="Back", callback_data=f"{models.Movie.__tablename__}_uuid_{movie.uuid}_{models.Trailer.__tablename__}")])
+                
+            self.markup = InlineKeyboardMarkup(inline_keyboard=inline_buttons)
+            self.text = text
+            
             return text
             
         return {"message": await message()}
