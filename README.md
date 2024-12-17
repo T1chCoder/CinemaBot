@@ -10,7 +10,7 @@
 </p>
 
 <hr class="dotted">
-It is a robust online shopping website crafted with the Django Rest Framework, offering a seamless foundation for managing products and creating a high-quality, feature-rich shopping experience. It’s all you need to build and scale your store with elegance and efficiency.
+A powerful Telegram bot built with Aiogram, an asynchronous framework for bot development, and SQLAlchemy, a robust ORM for managing databases. This bot offers seamless handling of user interactions, efficient data storage, and a scalable foundation for creating advanced Telegram bot functionalities.
 
 ## Screenshots
 
