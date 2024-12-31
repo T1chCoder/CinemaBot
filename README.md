@@ -42,7 +42,7 @@ Connect with me at:
 </p>
 
 <p align='center'>
-  📫 How to reach me: <a href='mailto:t1chcoder@gmail.com'>t1chcoder@gmail.com</a>
+  📫 How to reach me: <a href='mailto:zhumabaevasadbek123@gmail.com'>zhumabaevasadbek123@gmail.com</a>
 </p>
 
 ## Some technical information:
