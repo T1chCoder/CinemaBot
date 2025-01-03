@@ -129,3 +129,5 @@ Thank you!
 
 This project is licensed under the MIT License - see
 the [LICENSE.md](https://github.com/T1chCoder/ShopSmart/blob/master/LICENSE.md) file for details.
+
+<img src="https://t.bkit.co/w_6777daafd2a20.gif" />
